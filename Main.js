@@ -107,3 +107,40 @@ function handleFileLoad(event) {
         break;
     }
 }
+
+function addTitleView() {
+    startB.x = 240 - 31.5;
+    startB.y = 160;
+    startB.name = 'startB';
+
+    creditsB.x = 241 - 42;
+    creditsB.y = 200;
+
+    TitleView.addChild(main, startB, creditsB);
+    stage.addChild(bg, TitleView);
+    stage.update();
+
+    startB.onPress = tweenTitleView;
+    creditsB.onPress = showCredits;
+}
+
+function showCredits() {
+    credits.x = 480;
+
+    stage.addChild(credits);
+    stage.update();
+    Tween.get(credits).to({x:0}, 300);
+    credits.onPress = hideCredits;
+}
+
+function hideCredits(e) {
+    Tween.get(credits).to({x:480}, 300).call(rmvCredits);
+}
+
+function rmvCredits() {
+    stage.removeChild(credits);
+}
+
+function tweenTitleView() {
+    Tween.get(TitleView).to({y:-320}, 300).call(addGameView);
+}
