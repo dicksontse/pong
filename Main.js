@@ -38,8 +38,7 @@ var totalLoaded = 0;
 
 var TitleView = new Container();
 
-function Main()
-{
+function Main() {
     /* Link Canvas */
     canvas = document.getElementById('PongStage');
     stage = new Stage(canvas);
@@ -81,4 +80,30 @@ function Main()
     Ticker.setFPS(30);
     Ticker.addListener(stage);
 
+}
+
+function handleProgress(event) {
+
+}
+
+function handleComplete(event) {
+    totalLoaded++;
+    if (manifest.length == totalLoaded) {
+        addTitleView();
+    }
+}
+
+function handleFileLoad(event) {
+    switch(event.type) {
+        case PreloadJS.IMAGE:
+            var img = new Image();
+            img.src = event.src;
+            img.onload = handleLoadComplete;
+            window[event.id] = new Bitmap(img);
+        break;
+
+        case PreloadJS.SOUND:
+            handleLoadComplete();
+        break;
+    }
 }
