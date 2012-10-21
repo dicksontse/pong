@@ -36,12 +36,12 @@ var preloader;
 var manifest;
 var totalLoaded = 0;
 
-var TitleView = new Container();
+var TitleView = new createjs.Container();
 
 function Main() {
     /* Link Canvas */
     canvas = document.getElementById('PongStage');
-    stage = new Stage(canvas);
+    stage = new createjs.Stage(canvas);
 
     stage.mouseEventsEnabled = true;
 
