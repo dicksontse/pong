@@ -45,13 +45,6 @@ function Main() {
 
     stage.mouseEventsEnabled = true;
 
-    /* Set the flash plugin for browsers that don't support SoundJS */
-    SoundJS.FlashPlugin.BASE_PATH = "assets/";
-    if (!SoundJS.checkPlugin(true)) {
-        alert("Error!");
-        return;
-    }
-
     manifest = [
         {src: "assets/bg.png", id: "bg"},
         {src: "assets/main.png", id: "main"},
@@ -63,23 +56,22 @@ function Main() {
         {src: "assets/ball.png", id: "ball"},
         {src: "assets/win.png", id: "win"},
         {src: "assets/lose.png", id: "lose"},
-        {src: "assets/playerScore.mp3|assets/playerScore.ogg", id: "playerScore"},
-        {src: "assets/enemyScore.mp3|assets/enemyScore.ogg", id: "enemyScore"},
-        {src: "assets/hit.mp3|assets/hit.ogg", id: "hit"},
-        {src: "assets/wall.mp3|assets/wall.ogg", id: "wall"},
+        {src: "assets/playerScore.ogg", id: "playerScore"},
+        {src: "assets/enemyScore.ogg", id: "enemyScore"},
+        {src: "assets/hit.ogg", id: "hit"},
+        {src: "assets/wall.ogg", id: "wall"},
     ];
 
-    preloader = new PreloadJS();
-    preloader.installPlugin(SoundJS);
+    preloader = new createjs.PreloadJS();
+    preloader.installPlugin(createjs.SoundJS);
     preloader.onProgress = handleProgress;
     preloader.onComplete = handleComplete;
     preloader.onFileLoad = handleFileLoad;
     preloader.loadManifest(manifest);
 
     /* Ticker */
-    Ticker.setFPS(30);
-    Ticker.addListener(stage);
-
+    createjs.Ticker.setFPS(30);
+    createjs.Ticker.addListener(stage);
 }
 
 function handleProgress(event) {
@@ -87,24 +79,28 @@ function handleProgress(event) {
 }
 
 function handleComplete(event) {
-    totalLoaded++;
-    if (manifest.length == totalLoaded) {
-        addTitleView();
-    }
+
 }
 
 function handleFileLoad(event) {
     switch(event.type) {
-        case PreloadJS.IMAGE:
+        case createjs.PreloadJS.IMAGE:
             var img = new Image();
             img.src = event.src;
             img.onload = handleLoadComplete;
-            window[event.id] = new Bitmap(img);
+            window[event.id] = new createjs.Bitmap(img);
         break;
 
-        case PreloadJS.SOUND:
+        case createjs.PreloadJS.SOUND:
             handleLoadComplete();
         break;
+    }
+}
+
+function handleLoadComplete(event) {
+    totalLoaded++;
+    if (manifest.length == totalLoaded) {
+        addTitleView();
     }
 }
 
@@ -129,12 +125,12 @@ function showCredits() {
 
     stage.addChild(credits);
     stage.update();
-    Tween.get(credits).to({x: 0}, 300);
+    createjs.Tween.get(credits).to({x: 0}, 300);
     credits.onPress = hideCredits;
 }
 
 function hideCredits(e) {
-    Tween.get(credits).to({x: 480}, 300).call(rmvCredits);
+    createjs.Tween.get(credits).to({x: 480}, 300).call(rmvCredits);
 }
 
 function rmvCredits() {
@@ -142,7 +138,7 @@ function rmvCredits() {
 }
 
 function tweenTitleView() {
-    Tween.get(TitleView).to({y: -320}, 300).call(addGameView);
+    createjs.Tween.get(TitleView).to({y: -320}, 300).call(addGameView);
 }
 
 function addGameView() {
@@ -157,11 +153,11 @@ function addGameView() {
     ball.x = 240 - 15;
     ball.y = 160 - 15;
 
-    playerScore = new Text('0', 'bold 20px Arial', '#a3ff24');
+    playerScore = new createjs.Text('0', 'bold 20px Arial', '#a3ff24');
     playerScore.x = 211;
     playerScore.y = 20;
 
-    cpuScore = new Text('0', 'bold 20px Arial', '#a3ff24');
+    cpuScore = new createjs.Text('0', 'bold 20px Arial', '#a3ff24');
     cpuScore.x = 262;
     cpuScore.y = 20;
 
@@ -175,7 +171,7 @@ function startGame(e) {
     bg.onPress = null;
     stage.onMouseMove = movePaddle;
 
-    Ticker.addListener(tkr, false);
+    createjs.Ticker.addListener(tkr, false);
     tkr.tick = update;
 }
 
@@ -190,12 +186,12 @@ function reset() {
     cpu.y = 160 - 37.5;
 
     stage.onMouseMove = null;
-    Ticker.removeListener(tkr);
+    createjs.Ticker.removeListener(tkr);
     bg.onPress = startGame;
 }
 
 function alert(e) {
-    Ticker.removeListener(tkr);
+    createjs.Ticker.removeListener(tkr);
     stage.onMouseMove = null;
     bg.onPress = null;
 
@@ -204,14 +200,14 @@ function alert(e) {
         win.y = -90;
 
         stage.addChild(win);
-        Tween.get(win).to({y: 115}, 300);
+        createjs.Tween.get(win).to({y: 115}, 300);
     }
     else {
         lose.x = 140;
         lose.y = -90;
 
         stage.addChild(lose);
-        Tween.get(lose).to({y: 115}, 300);
+        createjs.Tween.get(lose).to({y: 115}, 300);
     }
 }
 
@@ -221,22 +217,22 @@ function update() {
     ball.y = ball.y + ySpeed;
 
     // CPU Movement
-    if (cpu.y < ball.y) {
-        cpu.y = cpu.y + 4;
+    if ((cpu.y + 32) < (ball.y - 14)) {
+        cpu.y = cpu.y + cpuSpeed;
     }
-    else if (cpu.y > ball.y) {
-        cpu.y = cpu.y - 4;
+    else if ((cpu.y + 32) > (ball.y + 14)) {
+        cpu.y = cpu.y - cpuSpeed;
     }
 
     // Wall Collision
     if (ball.y < 0) { // Up
         ySpeed = -ySpeed;
-        SoundJS.play('wall');
+        createjs.SoundJS.play('wall');
     }
 
     if ((ball.y + 30) > 320) { // Down
         ySpeed = -ySpeed;
-        SoundJS.play('wall');
+        createjs.SoundJS.play('wall');
     }
 
     // CPU Score
@@ -244,7 +240,7 @@ function update() {
         xSpeed = -xSpeed;
         cpuScore.text = parseInt(cpuScore.text + 1);
         reset();
-        SoundJS.play('enemyScore');
+        createjs.SoundJS.play('enemyScore');
     }
 
     // Player Score
@@ -252,19 +248,19 @@ function update() {
         xSpeed = -xSpeed;
         playerScore.text = parseInt(playerScore.text + 1);
         reset();
-        SoundJS.play('playerScore');
+        createjs.SoundJS.play('playerScore');
     }
 
     // CPU Collision
-    if (ball.x + 30 > cpu.x && ball.x + 30 < cpu.x + 22 && ball.y >= cpu.y && ball.y < cpu.y + 75) {
+    if ((ball.x + 30) > cpu.x && (ball.x + 30) < (cpu.x + 22) && ball.y >= cpu.y && ball.y < (cpu.y + 75)) {
         xSpeed *= -1;
-        SoundJS.play('hit');
+        createjs.SoundJS.play('hit');
     }
 
     // Player collision
-    if (ball.x <= player.x + 22 && ball.x > player.x && ball.y >= player.y && ball.y < player.y + 75) {
+    if (ball.x <= (player.x + 22) && ball.x > player.x && ball.y >= player.y && ball.y < (player.y + 75)) {
         xSpeed *= -1;
-        SoundJS.play('hit');
+        createjs.SoundJS.play('hit');
     }
 
     // Stop paddle from going out of canvas
