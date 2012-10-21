@@ -38,4 +38,47 @@ var totalLoaded = 0;
 
 var TitleView = new Container();
 
+function Main()
+{
+    /* Link Canvas */
+    canvas = document.getElementById('PongStage');
+    stage = new Stage(canvas);
 
+    stage.mouseEventsEnabled = true;
+
+    /* Set the flash plugin for browsers that don't support SoundJS */
+    SoundJS.FlashPlugin.BASE_PATH = "assets/";
+    if (!SoundJS.checkPlugin(true)) {
+        alert("Error!");
+        return;
+    }
+
+    manifest = [
+        {src: "assets/bg.png", id: "bg"},
+        {src: "assets/main.png", id: "main"},
+        {src: "assets/startB.png", id: "startB"},
+        {src: "assets/creditsB.png", id: "creditsB"},
+        {src: "assets/credits.png", id: "credits"},
+        {src: "assets/paddle.png", id: "cpu"},
+        {src: "assets/paddle.png", id: "player"},
+        {src: "assets/ball.png", id: "ball"},
+        {src: "assets/win.png", id: "win"},
+        {src: "assets/lose.png", id: "lose"},
+        {src: "assets/playerScore.mp3|assets/playerScore.ogg", id: "playerScore"},
+        {src: "assets/enemyScore.mp3|assets/enemyScore.ogg", id: "enemyScore"},
+        {src: "assets/hit.mp3|assets/hit.ogg", id: "hit"},
+        {src: "assets/wall.mp3|assets/wall.ogg", id: "wall"},
+    ];
+
+    preloader = new PreloadJS();
+    preloader.installPlugin(SoundJS);
+    preloader.onProgress = handleProgress;
+    preloader.onComplete = handleComplete;
+    preloader.onFileLoad = handleFileLoad;
+    preloader.loadManifest(manifest);
+
+    /* Ticker */
+    Ticker.setFPS(30);
+    Ticker.addListener(stage);
+
+}
