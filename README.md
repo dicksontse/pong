@@ -1,6 +1,7 @@
 # Pong
 
-A HTML5 Pong game built using CreateJS.
+An HTML5 Pong game built using CreateJS.
+http://projects.dicksontse.com/pong/
 
 ## Tutorial
 
