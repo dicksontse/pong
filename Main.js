@@ -2,25 +2,25 @@ var canvas;
 var stage;
 
 //[Graphics]
-//Background
+// Background
 var bg;
 
-//Title View
+// Title View
 var main;
 var startB;
 var creditsB;
 
-//Credits
+// Credits
 var credits;
 
-//Game View
+// Game View
 var player;
 var ball;
 var cpu;
 var win;
 var lose;
 
-//Score
+// Score
 var playerScore;
 var cpuScore;
 var cpuSpeed = 6;
@@ -31,7 +31,7 @@ var ySpeed = 5;
 
 var tkr = new Object;
 
-//preloader
+// preloader
 var preloader;
 var manifest;
 var totalLoaded = 0;
@@ -212,5 +212,73 @@ function alert(e) {
 
         stage.addChild(lose);
         Tween.get(lose).to({y: 115}, 300);
+    }
+}
+
+function update() {
+    // Ball Movement
+    ball.x = ball.x + xSpeed;
+    ball.y = ball.y + ySpeed;
+
+    // CPU Movement
+    if (cpu.y < ball.y) {
+        cpu.y = cpu.y + 4;
+    }
+    else if (cpu.y > ball.y) {
+        cpu.y = cpu.y - 4;
+    }
+
+    // Wall Collision
+    if (ball.y < 0) { // Up
+        ySpeed = -ySpeed;
+        SoundJS.play('wall');
+    }
+
+    if ((ball.y + 30) > 320) { // Down
+        ySpeed = -ySpeed;
+        SoundJS.play('wall');
+    }
+
+    // CPU Score
+    if (ball.x < 0) {
+        xSpeed = -xSpeed;
+        cpuScore.text = parseInt(cpuScore.text + 1);
+        reset();
+        SoundJS.play('enemyScore');
+    }
+
+    // Player Score
+    if ((ball.x + 30) > 480) {
+        xSpeed = -xSpeed;
+        playerScore.text = parseInt(playerScore.text + 1);
+        reset();
+        SoundJS.play('playerScore');
+    }
+
+    // CPU Collision
+    if (ball.x + 30 > cpu.x && ball.x + 30 < cpu.x + 22 && ball.y >= cpu.y && ball.y < cpu.y + 75) {
+        xSpeed *= -1;
+        SoundJS.play('hit');
+    }
+
+    // Player collision
+    if (ball.x <= player.x + 22 && ball.x > player.x && ball.y >= player.y && ball.y < player.y + 75) {
+        xSpeed *= -1;
+        SoundJS.play('hit');
+    }
+
+    // Stop paddle from going out of canvas
+    if (player.y >= 249) {
+        player.y = 249;
+    }
+
+    // Check for win
+    if (playerScore.text == '10') {
+        alert('win');
+    }
+
+    // Check for game over
+    if (cpuScore.text == '10') {
+        alert('lose');
     }
 }
