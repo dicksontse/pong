@@ -129,12 +129,12 @@ function showCredits() {
 
     stage.addChild(credits);
     stage.update();
-    Tween.get(credits).to({x:0}, 300);
+    Tween.get(credits).to({x: 0}, 300);
     credits.onPress = hideCredits;
 }
 
 function hideCredits(e) {
-    Tween.get(credits).to({x:480}, 300).call(rmvCredits);
+    Tween.get(credits).to({x: 480}, 300).call(rmvCredits);
 }
 
 function rmvCredits() {
@@ -142,5 +142,75 @@ function rmvCredits() {
 }
 
 function tweenTitleView() {
-    Tween.get(TitleView).to({y:-320}, 300).call(addGameView);
+    Tween.get(TitleView).to({y: -320}, 300).call(addGameView);
+}
+
+function addGameView() {
+    stage.removeChild(TitleView);
+    TitleView = null;
+    credits = null;
+
+    player.x = 2;
+    player.y = 160 - 37.5;
+    cpu.x = 480 - 25;
+    cpu.y = 160 - 37.5;
+    ball.x = 240 - 15;
+    ball.y = 160 - 15;
+
+    playerScore = new Text('0', 'bold 20px Arial', '#a3ff24');
+    playerScore.x = 211;
+    playerScore.y = 20;
+
+    cpuScore = new Text('0', 'bold 20px Arial', '#a3ff24');
+    cpuScore.x = 262;
+    cpuScore.y = 20;
+
+    stage.addChild(playerScore, cpuScore, player, cpu, ball);
+    stage.update();
+
+    bg.onPress = startGame;
+}
+
+function startGame(e) {
+    bg.onPress = null;
+    stage.onMouseMove = movePaddle;
+
+    Ticker.addListener(tkr, false);
+    tkr.tick = update;
+}
+
+function movePaddle(e) {
+    player.y = e.stageY;
+}
+
+function reset() {
+    ball.x = 240 - 15;
+    ball.y = 160 - 15;
+    player.y = 160 - 37.5;
+    cpu.y = 160 - 37.5;
+
+    stage.onMouseMove = null;
+    Ticker.removeListener(tkr);
+    bg.onPress = startGame;
+}
+
+function alert(e) {
+    Ticker.removeListener(tkr);
+    stage.onMouseMove = null;
+    bg.onPress = null;
+
+    if (e == 'win') {
+        win.x = 140;
+        win.y = -90;
+
+        stage.addChild(win);
+        Tween.get(win).to({y: 115}, 300);
+    }
+    else {
+        lose.x = 140;
+        lose.y = -90;
+
+        stage.addChild(lose);
+        Tween.get(lose).to({y: 115}, 300);
+    }
 }
